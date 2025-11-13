@@ -11,6 +11,10 @@ export class UpdateUserDto {
   email?: string;
 
   @IsOptional()
+  @IsEmail({}, { message: 'Veuillez fournir une ville' })
+  ville: string;
+
+  @IsOptional()
   @IsString()
   @MinLength(6, { message: 'Le mot de passe doit contenir au moins 6 caractères' })
   password?: string;
