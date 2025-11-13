@@ -14,28 +14,29 @@ export class UserService {
     private usersRepository: Repository<User>,
   ) {}
 
+  // Liste tous les utilisateurs (sans mot de passe)
   async findAll(): Promise<User[]> {
     return this.usersRepository.find({
       where: { role: Role.USER },
-      select: ['id', 'username', 'email', 'role', 'avatar', 'createdAt'],
+      select: ['id', 'username', 'email', 'role', 'avatar', 'ville', 'createdAt'],
     });
   }
 
+  // Trouve un utilisateur par ID
   async findOne(id: number): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: { id, role: Role.USER },
-      select: ['id', 'username', 'email', 'role', 'avatar', 'createdAt'],
+      select: ['id', 'username', 'email', 'role', 'avatar', 'ville', 'createdAt'],
     });
-
     if (!user) {
       throw new NotFoundException('Utilisateur non trouvé');
     }
-
     return user;
   }
 
+  // Crée un nouvel utilisateur
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { email, password, ...userData } = createUserDto;
+    const { email, password, ville, ...userData } = createUserDto;
 
     // Vérifier si l'email existe déjà
     const existingUser = await this.usersRepository.findOne({ where: { email } });
@@ -51,6 +52,7 @@ export class UserService {
       ...userData,
       email,
       password: hashedPassword,
+      ville,
       role: Role.USER,
     });
 
@@ -61,31 +63,38 @@ export class UserService {
     return userWithoutPassword as User;
   }
 
+  // Met à jour un utilisateur
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
 
+    // Vérifier l'unicité de l'email si modifié
     if (updateUserDto.email && updateUserDto.email !== user.email) {
-      const existingUser = await this.usersRepository.findOne({ 
-        where: { email: updateUserDto.email } 
+      const existingUser = await this.usersRepository.findOne({
+        where: { email: updateUserDto.email },
       });
       if (existingUser) {
         throw new ConflictException('Cet email est déjà utilisé');
       }
     }
 
+    // Hasher le nouveau mot de passe si fourni
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
+    // Mettre à jour les champs (y compris ville)
     await this.usersRepository.update(id, updateUserDto);
+
     return this.findOne(id);
   }
 
+  // Supprime un utilisateur
   async remove(id: number): Promise<void> {
     const user = await this.findOne(id);
     await this.usersRepository.remove(user);
   }
 
+  // Récupère le profil de l'utilisateur connecté
   async getProfile(userId: number): Promise<User> {
     return this.findOne(userId);
   }

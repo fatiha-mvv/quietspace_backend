@@ -29,6 +29,10 @@ export class User {
   @Column({ name: 'avatar', type: 'varchar', length: 256, nullable: true })
   avatar: string;
 
-  @CreateDateColumn({ name: 'created_at_utilisateur', type: 'date' })
+  // Ajoute cette ligne :
+  @Column({ name: 'ville', type: 'varchar', length: 100, nullable: true })
+  ville: string;
+
+ @CreateDateColumn({ name: 'created_at_utilisateur' })
   createdAt: Date;
 }

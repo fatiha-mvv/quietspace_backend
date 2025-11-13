@@ -10,6 +10,7 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: RegisterDto) {
+    console.log(' Contrôleur - Données reçues:', registerDto);  //  LOG
     return this.authService.register(registerDto);
   }
 
