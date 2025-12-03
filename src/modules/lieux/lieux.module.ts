@@ -6,10 +6,12 @@ import { LieuxController } from './lieux.controller';
 import { Lieu } from './entities/lieu.entity';
 import { TypeLieu } from './entities/type-lieu.entity';
 import { memoryStorage } from 'multer';
+import { CalmeModule } from '../calme/calme.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Lieu, TypeLieu]),
+    CalmeModule, 
     // Configuration de Multer pour utiliser la mémoire
     // Les fichiers seront gérés manuellement dans le service
     MulterModule.register({

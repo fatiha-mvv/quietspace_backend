@@ -9,6 +9,8 @@ import { User } from './modules/users/entities/user.entity';
 import { LieuxModule } from './modules/lieux/lieux.module';
 import { Lieu } from './modules/lieux/entities/lieu.entity'; 
 import { TypeLieu } from './modules/lieux/entities/type-lieu.entity'; 
+import { TypeElemBruit } from './modules/calme/entities/type-elem-bruit.entity'; 
+import { CalmeModule } from './modules/calme/calme.module'; 
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { TypeLieu } from './modules/lieux/entities/type-lieu.entity';
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [User, Lieu, TypeLieu],
+        entities: [User, Lieu, TypeLieu,TypeElemBruit],
         synchronize: false,
       }),
       inject: [ConfigService],
@@ -54,6 +56,7 @@ import { TypeLieu } from './modules/lieux/entities/type-lieu.entity';
     // Modules de l'application
     AuthModule,
     UsersModule,
+    CalmeModule,
     LieuxModule,
   ],
 })

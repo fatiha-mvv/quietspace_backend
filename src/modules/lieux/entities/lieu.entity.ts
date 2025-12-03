@@ -44,12 +44,20 @@ export class Lieu {
   geom: string;
 
 
-  @Column({
-    name: 'score_calme',
-    type: 'integer',
-    nullable: true
-  })
-  scoreCalme: number;
+  // @Column({
+  //   name: 'score_calme',
+  //   type: 'integer',
+  //   nullable: true
+  // })
+  // scoreCalme: number;
+  @Column({ 
+  name: 'score_calme', 
+  type: 'decimal', 
+  precision: 5, 
+  scale: 2,
+  nullable: true 
+})
+scoreCalme: number | null;
 
   @Column({
     name: 'niveau_calme',

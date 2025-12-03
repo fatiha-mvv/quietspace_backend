@@ -7,6 +7,7 @@ import { CreateLieuDto } from './dto/create-lieu.dto';
 import { UpdateLieuDto } from './dto/update-lieu.dto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { CalmeCalculatorService } from '../calme/calme-calculator.service';
 
 @Injectable()
 export class LieuxService {
@@ -15,41 +16,16 @@ export class LieuxService {
     private readonly lieuRepository: Repository<Lieu>,
     @InjectRepository(TypeLieu)
     private readonly typeLieuRepository: Repository<TypeLieu>,
+
+     private readonly calmeCalculator: CalmeCalculatorService
   ) {}
 
   // Configuration pour le stockage des images
   private readonly uploadPath = path.join(process.cwd(), 'public', 'images', 'lieux');
   private readonly baseImageUrl = 'images/lieux'; // Sans le slash initial
 
-  // Méthode pour calculer le niveau de calme basé sur le score
-  private calculerNiveauCalme(scoreCalme: number): string {
-    if (scoreCalme >= 80 && scoreCalme <= 100) {
-      return 'Très calme';
-    } else if (scoreCalme >= 60 && scoreCalme <= 79) {
-      return 'Calme';
-    } else if (scoreCalme >= 40 && scoreCalme <= 59) {
-      return 'Assez bruyant';
-    } else if (scoreCalme >= 0 && scoreCalme <= 39) {
-      return 'Très bruyant';
-    } else {
-      return 'Non défini';
-    }
-  }
+ 
 
-  // Méthode pour calculer le score de calme (pour l'instant valeur par défaut)
-  private calculerScoreCalme(idTypeLieu: number): number {
-    // Pour l'instant, on retourne une valeur par défaut basée sur le type de lieu
-    // Vous pouvez adapter cette logique plus tard
-    const scoresParType: { [key: number]: number } = {
-      1: 85, // Bibliothèque - Très calme
-      2: 70, // Parc - Calme
-      3: 45, // Café - Assez bruyant
-      4: 30, // Restaurant - Très bruyant
-      // Ajoutez d'autres types selon vos besoins
-    };
-    
-    return scoresParType[idTypeLieu] || 70; // Valeur par défaut
-  }
 
   
 
@@ -152,6 +128,28 @@ export class LieuxService {
       // Ne pas throw l'erreur pour ne pas bloquer la suppression du lieu
     }
   }
+  
+  //helper
+private extractCoordinates(geom: string) {
+  if (!geom) {
+    throw new BadRequestException("Geom est requis.");
+  }
+
+  const match = geom.match(/POINT\(([^ ]+) ([^ ]+)\)/);
+
+  if (!match) {
+    throw new BadRequestException(
+      "Format geom invalide. Format attendu: POINT(lon lat)"
+    );
+  }
+
+  return {
+    longitude: parseFloat(match[1]),
+    latitude: parseFloat(match[2])
+  };
+}
+
+
 
   // Méthode pour créer un lieu avec upload d'image
   async createWithImage(createLieuDto: CreateLieuDto, imageFile?: Express.Multer.File): Promise<Lieu> {
@@ -176,8 +174,29 @@ export class LieuxService {
   console.log('Données complètes reçues:', createLieuDto);
 
     // Calculer automatiquement le score de calme et le niveau
-    const scoreCalme = this.calculerScoreCalme(createLieuDto.idTypeLieu);
-    const niveauCalme = this.calculerNiveauCalme(scoreCalme);
+    // const scoreCalme = this.calculerScoreCalme(createLieuDto.idTypeLieu);
+    // const niveauCalme = this.calculerNiveauCalme(scoreCalme);
+    //calcule de niveau de calme --DEBUT
+    // extraire latitude et longitude depuis le geom
+    if (!createLieuDto.geom) {
+        throw new BadRequestException("geom est requis pour calculer le score.");
+      }
+    const coords = this.extractCoordinates(createLieuDto.geom);
+
+    // score de base selon type de lieu
+    const baseScore = this.calmeCalculator.getScoreBase(createLieuDto.idTypeLieu);
+
+    // calcul via Overpass
+    const calmeData = await this.calmeCalculator.calculateScoreCalme(
+      coords.latitude,
+      coords.longitude,
+      baseScore
+    );
+
+    const scoreCalme = calmeData.scoreFinal;
+    const niveauCalme = calmeData.niveauCalme;
+
+    //calcule de niveau de calme --FIN
 
      // Utiliser Query Builder pour l'insertion spatiale
   const result = await this.lieuRepository
@@ -237,11 +256,27 @@ export class LieuxService {
     }
 
     // Si le type de lieu change, recalculer le score et le niveau
-    const nouveauScoreCalme = this.calculerScoreCalme(updateLieuDto.idTypeLieu);
-    const nouveauNiveauCalme = this.calculerNiveauCalme(nouveauScoreCalme);
+    // const nouveauScoreCalme = this.calculerScoreCalme(updateLieuDto.idTypeLieu);
+    // const nouveauNiveauCalme = this.calculerNiveauCalme(nouveauScoreCalme);
+    //calculer score --DEBUT
+   const coords = this.extractCoordinates(updateLieuDto.geom ?? lieu.geom);
+
+    const baseScore = this.calmeCalculator.getScoreBase(
+      updateLieuDto.idTypeLieu ?? lieu.idTypeLieu
+    );
+
+    const calmeData = await this.calmeCalculator.calculateScoreCalme(
+      coords.latitude,
+      coords.longitude,
+      baseScore
+    );
+
+    updateLieuDto.scoreCalme = calmeData.scoreFinal;
+    updateLieuDto.niveauCalme = calmeData.niveauCalme;
+
+    //calculer score --FIN
     
-    updateLieuDto.scoreCalme = nouveauScoreCalme;
-    updateLieuDto.niveauCalme = nouveauNiveauCalme;
+   
   }
 
   // Si le geom est modifié, utiliser le bon SRID
