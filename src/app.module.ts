@@ -6,11 +6,21 @@ import { memoryStorage } from 'multer';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { User } from './modules/users/entities/user.entity';
-import { LieuxModule } from './modules/lieuxAdmin/lieux.module';
-import { Lieu } from './modules/lieuxAdmin/entities/lieu.entity'; 
+import { LieuxAdminModule } from './modules/lieuxAdmin/lieux.module';
+import { LieuAdmin } from './modules/lieuxAdmin/entities/lieu.entity'; 
 import { TypeLieu } from './modules/lieuxAdmin/entities/type-lieu.entity'; 
 import { TypeElemBruit } from './modules/calme/entities/type-elem-bruit.entity'; 
 import { CalmeModule } from './modules/calme/calme.module'; 
+import { LieuxModule } from './modules/lieux/lieux.module'; 
+import { Lieu } from './modules/lieux/entities/lieu.entity';
+import { TypeLieu } from './modules/lieux/entities/type-lieu.entity'; 
+import { Avis } from './modules/avis/entities/avis.entity';           
+import { Favoris } from './modules/favoris/entities/favoris.entity';
+import { ElementBruit } from './modules/elements-bruit/entities/element-bruit.entity'; 
+import { TypeElemBruit } from './modules/elements-bruit/entities/type-elem-bruit.entity';
+import { AvisModule } from './modules/avis/avis.module';
+import { FavorisModule } from './modules/favoris/favoris.module';
+
 
 @Module({
   imports: [
@@ -29,8 +39,17 @@ import { CalmeModule } from './modules/calme/calme.module';
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [User, Lieu, TypeLieu,TypeElemBruit],
-        synchronize: false,
+       
+        entities: [User,
+           Lieu, 
+                   LieuAdmin,
+          TypeLieu, 
+          Avis,     
+          Favoris,  
+          ElementBruit,
+          TypeElemBruit,
+        ],
+        synchronize: false, 
       }),
       inject: [ConfigService],
     }),
@@ -57,7 +76,10 @@ import { CalmeModule } from './modules/calme/calme.module';
     AuthModule,
     UsersModule,
     CalmeModule,
+    LieuxAdminModule,
     LieuxModule,
+    AvisModule,
+    FavorisModule,
   ],
 })
 export class AppModule {}
