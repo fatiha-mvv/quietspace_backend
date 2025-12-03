@@ -17,12 +17,12 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LieuxService } from './lieux.service';
-import { CreateLieuDto } from './dto/create-lieu.dto';
-import { UpdateLieuDto } from './dto/update-lieu.dto';
-import { Lieu } from './entities/lieu.entity';
-import { TypeLieu } from './entities/type-lieu.entity';
+import { CreateLieuDto } from '../lieuxAdmin/dto/create-lieu.dto';
+import { UpdateLieuDto } from '../lieuxAdmin/dto/update-lieu.dto';
+import { Lieu } from '../lieuxAdmin/entities/lieu.entity';
+import { TypeLieu } from '../lieuxAdmin/entities/type-lieu.entity';
 
-@Controller('lieux')
+@Controller('lieuxAdmin')
 export class LieuxController {
   constructor(private readonly lieuxService: LieuxService) {}
 

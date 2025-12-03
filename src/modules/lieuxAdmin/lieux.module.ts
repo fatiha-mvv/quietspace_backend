@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from '@nestjs/platform-express';
 import { LieuxService } from './lieux.service';
 import { LieuxController } from './lieux.controller';
-import { Lieu } from './entities/lieu.entity';
-import { TypeLieu } from './entities/type-lieu.entity';
+import { Lieu } from '../lieuxAdmin/entities/lieu.entity';
+import { TypeLieu } from '../lieuxAdmin/entities/type-lieu.entity';
 import { memoryStorage } from 'multer';
 import { CalmeModule } from '../calme/calme.module';
 

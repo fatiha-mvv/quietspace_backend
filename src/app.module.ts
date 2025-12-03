@@ -6,9 +6,9 @@ import { memoryStorage } from 'multer';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { User } from './modules/users/entities/user.entity';
-import { LieuxModule } from './modules/lieux/lieux.module';
-import { Lieu } from './modules/lieux/entities/lieu.entity'; 
-import { TypeLieu } from './modules/lieux/entities/type-lieu.entity'; 
+import { LieuxModule } from './modules/lieuxAdmin/lieux.module';
+import { Lieu } from './modules/lieuxAdmin/entities/lieu.entity'; 
+import { TypeLieu } from './modules/lieuxAdmin/entities/type-lieu.entity'; 
 import { TypeElemBruit } from './modules/calme/entities/type-elem-bruit.entity'; 
 import { CalmeModule } from './modules/calme/calme.module'; 
 
