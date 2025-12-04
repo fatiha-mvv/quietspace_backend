@@ -20,7 +20,7 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3001);
   
-  console.log(`🚀 Backend démarré sur http://localhost:${process.env.PORT ?? 3001}`);
-  console.log(`🖼️  Images accessibles via http://localhost:${process.env.PORT ?? 3001}/images/lieux/`);
+  console.log(`Backend démarré sur http://localhost:${process.env.PORT ?? 3001}`);
+  console.log(`Images accessibles via http://localhost:${process.env.PORT ?? 3001}/images/lieux/`);
 }
 bootstrap();

@@ -1,44 +1,3 @@
-// import {
-//   Controller,
-//   Get,
-//   Query,
-//   Param,
-//   ParseIntPipe,
-//   Request,
-// } from '@nestjs/common';
-// import { LieuxService } from './lieux.service';
-// import { GetLieuxQueryDto } from './dto/get-lieux-query.dto';
-
-// @Controller('lieux')
-// export class LieuxController {
-//   constructor(private readonly lieuxService: LieuxService) {}
-
-//   @Get('types')
-//   async getTypesLieux() {
-//     return this.lieuxService.getTypesLieux();
-//   }
-
-//   @Get(':id')
-//   async getLieuById(
-//     @Param('id', ParseIntPipe) id: number,
-//     @Request() req?: any,
-//   ) {
-//     const userId = req?.user?.id;
-//     return this.lieuxService.getLieuById(id, userId);
-//   }
-
-//   @Get()
-//   async getLieux(
-//     @Query() query: GetLieuxQueryDto,
-//     @Request() req?: any,
-//   ) {
-//     const userId = req?.user?.id;
-//     return this.lieuxService.getLieux(query, userId);
-//   }
-// }
-
-
-
 import {
   Controller,
   Get,
@@ -102,28 +61,28 @@ export class LieuxController {
     
     // 🔍 LOG: Vérifier TOUS les paramètres reçus
     this.logger.log('========================================');
-    this.logger.log('📍 Requête GET /lieux');
+    this.logger.log('Requête GET /lieux');
     this.logger.log('========================================');
-    this.logger.log(`🔑 User ID: ${userId || 'Non authentifié'}`);
-    this.logger.log(`🔍 Recherche: ${query.search || 'Aucune'}`);
-    this.logger.log(`📂 Types: ${query.types || 'Tous'}`);
-    this.logger.log(`🔊 Niveau calme: ${query.niveauCalme || 'Tous'}`);
+    this.logger.log(`User ID: ${userId || 'Non authentifié'}`);
+    this.logger.log(`Recherche: ${query.search || 'Aucune'}`);
+    this.logger.log(`Types: ${query.types || 'Tous'}`);
+    this.logger.log(`Niveau calme: ${query.niveauCalme || 'Tous'}`);
     
     // ⭐ CRITIQUE: Vérifier la position utilisateur
     if (query.latitude !== undefined && query.longitude !== undefined) {
-      this.logger.log(`📍 Position utilisateur:`);
+      this.logger.log(`--Position utilisateur:`);
       this.logger.log(`   - Latitude: ${query.latitude}°`);
       this.logger.log(`   - Longitude: ${query.longitude}°`);
       this.logger.log(`   - Distance max: ${query.distance || 'Illimitée'} mètres`);
       
       // Vérifier si les coordonnées sont valides
       if (this.isValidCoordinate(query.latitude, query.longitude)) {
-        this.logger.log(`   ✅ Coordonnées valides`);
+        this.logger.log(`===>Coordonnées valides`);
       } else {
-        this.logger.warn(`   ⚠️ Coordonnées invalides !`);
+        this.logger.warn(`===>Coordonnées invalides !`);
       }
     } else {
-      this.logger.warn(`⚠️ Aucune position utilisateur fournie`);
+      this.logger.warn(`==>Aucune position utilisateur fournie`);
       if (query.latitude === undefined) {
         this.logger.warn(`   - Latitude manquante`);
       }

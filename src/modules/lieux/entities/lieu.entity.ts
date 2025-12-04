@@ -5,15 +5,12 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
-  ManyToMany,
-  JoinTable,
 } from 'typeorm';
 import type { Point } from 'geojson';
 
-import { TypeLieu } from './type-lieu.entity';
+import { TypeLieu } from '../../lieuxAdmin/entities/type-lieu.entity';
 import { Avis } from '../../avis/entities/avis.entity';
 import { Favoris } from '../../favoris/entities/favoris.entity';
-import { ElementBruit } from '../../elements-bruit/entities/element-bruit.entity';
 
 @Entity('lieu')
 export class Lieu {
@@ -60,11 +57,5 @@ export class Lieu {
   @OneToMany(() => Favoris, (favoris) => favoris.lieu)
   favoris: Favoris[];
 
-  @ManyToMany(() => ElementBruit)
-  @JoinTable({
-    name: 'env_bruit_lieu',
-    joinColumn: { name: 'id_lieu', referencedColumnName: 'idLieu' },
-    inverseJoinColumn: { name: 'id_elem_bruit', referencedColumnName: 'idElemBruit' },
-  })
-  elementsBruit: ElementBruit[];
+ 
 }

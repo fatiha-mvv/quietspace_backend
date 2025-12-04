@@ -13,11 +13,8 @@ import { TypeElemBruit } from './modules/calme/entities/type-elem-bruit.entity';
 import { CalmeModule } from './modules/calme/calme.module'; 
 import { LieuxModule } from './modules/lieux/lieux.module'; 
 import { Lieu } from './modules/lieux/entities/lieu.entity';
-import { TypeLieu } from './modules/lieux/entities/type-lieu.entity'; 
 import { Avis } from './modules/avis/entities/avis.entity';           
 import { Favoris } from './modules/favoris/entities/favoris.entity';
-import { ElementBruit } from './modules/elements-bruit/entities/element-bruit.entity'; 
-import { TypeElemBruit } from './modules/elements-bruit/entities/type-elem-bruit.entity';
 import { AvisModule } from './modules/avis/avis.module';
 import { FavorisModule } from './modules/favoris/favoris.module';
 
@@ -41,12 +38,11 @@ import { FavorisModule } from './modules/favoris/favoris.module';
         database: configService.get('DATABASE_NAME'),
        
         entities: [User,
-           Lieu, 
-                   LieuAdmin,
+          Lieu, 
+          LieuAdmin,
           TypeLieu, 
           Avis,     
           Favoris,  
-          ElementBruit,
           TypeElemBruit,
         ],
         synchronize: false, 

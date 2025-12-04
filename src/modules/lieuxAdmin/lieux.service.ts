@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Lieu } from '../lieuxAdmin/entities/lieu.entity';
+import { LieuAdmin } from '../lieuxAdmin/entities/lieu.entity';
 import { TypeLieu } from '../lieuxAdmin/entities/type-lieu.entity';
 import { CreateLieuDto } from '../lieuxAdmin/dto/create-lieu.dto';
 import { UpdateLieuDto } from '../lieuxAdmin/dto/update-lieu.dto';
@@ -12,8 +12,8 @@ import { CalmeCalculatorService } from '../calme/calme-calculator.service';
 @Injectable()
 export class LieuxService {
   constructor(
-    @InjectRepository(Lieu)
-    private readonly lieuRepository: Repository<Lieu>,
+    @InjectRepository(LieuAdmin)
+    private readonly lieuRepository: Repository<LieuAdmin>,
     @InjectRepository(TypeLieu)
     private readonly typeLieuRepository: Repository<TypeLieu>,
 
@@ -29,14 +29,14 @@ export class LieuxService {
 
   
 
-  async findAll(): Promise<Lieu[]> {
+  async findAll(): Promise<LieuAdmin[]> {
     return await this.lieuRepository.find({
       relations: ['typeLieu'],
       order: { idLieu: 'ASC' }
     });
   }
 
-  async findOne(id: number): Promise<Lieu> {
+  async findOne(id: number): Promise<LieuAdmin> {
     const lieu = await this.lieuRepository.findOne({
       where: { idLieu: id },
       relations: ['typeLieu']
@@ -152,7 +152,7 @@ private extractCoordinates(geom: string) {
 
 
   // Méthode pour créer un lieu avec upload d'image
-  async createWithImage(createLieuDto: CreateLieuDto, imageFile?: Express.Multer.File): Promise<Lieu> {
+  async createWithImage(createLieuDto: CreateLieuDto, imageFile?: Express.Multer.File): Promise<LieuAdmin> {
     let imagePath = createLieuDto.imageLieu;
 
     // Uploader la nouvelle image si fournie
@@ -202,7 +202,7 @@ private extractCoordinates(geom: string) {
   const result = await this.lieuRepository
     .createQueryBuilder()
     .insert()
-    .into(Lieu)
+    .into(LieuAdmin)
     .values({
       ...createLieuDto,
       imageLieu: imagePath,
@@ -231,7 +231,7 @@ private extractCoordinates(geom: string) {
   }
 
   // Méthode pour mettre à jour un lieu avec upload d'image
- async updateWithImage(id: number, updateLieuDto: UpdateLieuDto, imageFile?: Express.Multer.File): Promise<Lieu> {
+ async updateWithImage(id: number, updateLieuDto: UpdateLieuDto, imageFile?: Express.Multer.File): Promise<LieuAdmin> {
   const lieu = await this.findOne(id);
 
   // Uploader la nouvelle image si fournie
@@ -283,7 +283,7 @@ private extractCoordinates(geom: string) {
   if (updateLieuDto.geom) {
     await this.lieuRepository
       .createQueryBuilder()
-      .update(Lieu)
+      .update(LieuAdmin)
       .set({
         ...updateLieuDto,
         geom: () => `ST_GeomFromText('${updateLieuDto.geom}', 4326)` 
@@ -299,7 +299,7 @@ private extractCoordinates(geom: string) {
 }
 
   // Méthodes spécifiques pour les opérations spatiales
-  async findNearby(latitude: number, longitude: number, radius: number): Promise<Lieu[]> {
+  async findNearby(latitude: number, longitude: number, radius: number): Promise<LieuAdmin[]> {
     return await this.lieuRepository
       .createQueryBuilder('lieu')
       .leftJoinAndSelect('lieu.typeLieu', 'typeLieu')
@@ -315,7 +315,7 @@ private extractCoordinates(geom: string) {
       .getMany();
   }
 
-  async findByType(idTypeLieu: number): Promise<Lieu[]> {
+  async findByType(idTypeLieu: number): Promise<LieuAdmin[]> {
     return await this.lieuRepository.find({
       where: { idTypeLieu },
       relations: ['typeLieu'],

@@ -3,13 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LieuxController } from './lieux.controller';
 import { LieuxService } from './lieux.service';
 import { Lieu } from './entities/lieu.entity';
-import { TypeLieu } from './entities/type-lieu.entity';
-import { ElementBruit } from '../elements-bruit/entities/element-bruit.entity';
-import { EnvBruitLieu } from './entities/env-bruit-lieu.entity';
+import { TypeLieu } from '../lieuxAdmin/entities/type-lieu.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Lieu, TypeLieu, ElementBruit, EnvBruitLieu]),
+    TypeOrmModule.forFeature([Lieu, TypeLieu]),
   ],
   controllers: [LieuxController],
   providers: [LieuxService],

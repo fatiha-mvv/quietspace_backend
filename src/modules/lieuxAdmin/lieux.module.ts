@@ -3,14 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from '@nestjs/platform-express';
 import { LieuxService } from './lieux.service';
 import { LieuxController } from './lieux.controller';
-import { Lieu } from '../lieuxAdmin/entities/lieu.entity';
+import { LieuAdmin } from '../lieuxAdmin/entities/lieu.entity';
 import { TypeLieu } from '../lieuxAdmin/entities/type-lieu.entity';
 import { memoryStorage } from 'multer';
 import { CalmeModule } from '../calme/calme.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Lieu, TypeLieu]),
+    TypeOrmModule.forFeature([LieuAdmin, TypeLieu]),
     CalmeModule, 
     // Configuration de Multer pour utiliser la mémoire
     // Les fichiers seront gérés manuellement dans le service
@@ -35,4 +35,4 @@ import { CalmeModule } from '../calme/calme.module';
   providers: [LieuxService],
   exports: [LieuxService],
 })
-export class LieuxModule {}
+export class LieuxAdminModule {}

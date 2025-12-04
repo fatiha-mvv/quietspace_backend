@@ -19,7 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { LieuxService } from './lieux.service';
 import { CreateLieuDto } from '../lieuxAdmin/dto/create-lieu.dto';
 import { UpdateLieuDto } from '../lieuxAdmin/dto/update-lieu.dto';
-import { Lieu } from '../lieuxAdmin/entities/lieu.entity';
+import { LieuAdmin } from '../lieuxAdmin/entities/lieu.entity';
 import { TypeLieu } from '../lieuxAdmin/entities/type-lieu.entity';
 
 @Controller('lieuxAdmin')
@@ -60,7 +60,7 @@ export class LieuxController {
     @Query('lat', ParseFloatPipe) latitude: number,
     @Query('lng', ParseFloatPipe) longitude: number,
     @Query('radius', ParseFloatPipe) radius: number,
-  ): Promise<Lieu[]> {
+  ): Promise<LieuAdmin[]> {
     return await this.lieuxService.findNearby(latitude, longitude, radius);
   }
 
@@ -68,7 +68,7 @@ export class LieuxController {
   @Get('type/:idTypeLieu')
   async findByType(
     @Param('idTypeLieu', ParseIntPipe) idTypeLieu: number,
-  ): Promise<Lieu[]> {
+  ): Promise<LieuAdmin[]> {
     return await this.lieuxService.findByType(idTypeLieu);
   }
   // CREATE - Créer un nouveau lieu
@@ -77,19 +77,19 @@ export class LieuxController {
   async create(
     @Body() createLieuDto: CreateLieuDto,
     @UploadedFile() imageFile?: Express.Multer.File,
-  ): Promise<Lieu> {
+  ): Promise<LieuAdmin> {
     return await this.lieuxService.createWithImage(createLieuDto, imageFile);
   }
 
   // READ ALL - Récupérer tous les lieux
   @Get()
-  async findAll(): Promise<Lieu[]> {
+  async findAll(): Promise<LieuAdmin[]> {
     return await this.lieuxService.findAll();
   }
 
   // READ ONE - Récupérer un lieu par son ID
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Lieu> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<LieuAdmin> {
     return await this.lieuxService.findOne(id);
   }
 
@@ -100,7 +100,7 @@ export class LieuxController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateLieuDto: UpdateLieuDto,
     @UploadedFile() imageFile?: Express.Multer.File,
-  ): Promise<Lieu> {
+  ): Promise<LieuAdmin> {
     return await this.lieuxService.updateWithImage(id, updateLieuDto, imageFile);
   }
 

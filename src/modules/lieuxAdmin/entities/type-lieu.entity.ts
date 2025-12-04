@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Lieu } from './lieu.entity';
+import { LieuAdmin } from './lieu.entity';
 
 @Entity('type_lieu')
 export class TypeLieu {
@@ -24,6 +24,6 @@ export class TypeLieu {
   })
   baseScore: number;
 
-  @OneToMany(() => Lieu, (lieu) => lieu.typeLieu)
-  lieux: Lieu[];
+  @OneToMany(() => LieuAdmin, (lieu) => lieu.typeLieu)
+  lieux: LieuAdmin[];
 }

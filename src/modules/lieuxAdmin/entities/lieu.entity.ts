@@ -2,7 +2,7 @@ import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { TypeLieu } from './type-lieu.entity';
 
 @Entity('lieu')
-export class Lieu {
+export class LieuAdmin {
   @PrimaryColumn({
     name: 'id_lieu',
     type: 'integer'
