@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import axios from 'axios';
@@ -42,55 +42,11 @@ interface ScoreCalmeResult {
 
 @Injectable()
 export class CalmeCalculatorService {
-  private readonly logger = new Logger(CalmeCalculatorService.name);
 
   constructor(
    @InjectRepository(TypeElemBruit)
    private readonly typeElemBruitRepository: Repository<TypeElemBruit>,
   ) {}
-
-  /**
-   * Mapping des tags OSM vers les types d'éléments bruyants de votre BDD
-   */
-  private readonly OSM_TAG_MAPPING: Record<string, number> = {
-    // Éducation
-    'amenity=school': 1,              // ECOLE
-    'amenity=college': 1,             // ECOLE (collège)
-    'amenity=university': 1,          // ECOLE (université)
-    
-    // Culte
-    'amenity=place_of_worship|religion=muslim': 2,  // MOSQUEE
-    
-    // Routes
-    'highway=trunk': 3,               // ROUTE_NATIONALE
-    'highway=primary': 3,             // ROUTE_NATIONALE
-    
-    // Artisanat
-    'craft=carpenter': 4,             // MENUISERIE
-    'shop=hardware': 4,               // MENUISERIE
-    
-    // Commerce
-    'amenity=cafe': 5,                // CAFE
-    'amenity=fast_food': 5,           // CAFE (similaire)
-    
-    // Sport
-    'leisure=stadium': 6,             // STADE
-    'leisure=sports_centre': 6,       // STADE (centre sportif)
-    'leisure=pitch': 6,               // STADE (terrain)
-    
-    // Chantier/Construction
-    'landuse=construction': 7,        // CHANTIER
-    'construction=yes': 7,            // CHANTIER
-    
-    // Centre commercial
-    'shop=mall': 8,                   // CENTRE_COMMERCIAL
-    'shop=supermarket': 8,            // CENTRE_COMMERCIAL
-    'amenity=marketplace': 8,         // CENTRE_COMMERCIAL (marché)
-    
-    // Transport
-    'railway=station': 9,             // GARE
-    'public_transport=station': 9,    // GARE
-  };
 
   /**
    * Cache pour les configurations des types d'éléments bruyants
@@ -134,8 +90,8 @@ export class CalmeCalculatorService {
 
   /**
    * Récupère les éléments bruyants autour d'un lieu via Overpass API
-   * @param latitude Latitude du lieu (WGS84)
-   * @param longitude Longitude du lieu (WGS84)
+   * @param latitude Latitude du lieu (WGS84) 4326
+   * @param longitude Longitude du lieu (WGS84) 4326
    * @param radius Rayon de recherche en mètres (défaut: 200m)
    */
   async getElementsBruyants(
@@ -159,9 +115,9 @@ export class CalmeCalculatorService {
       const response = await axios.post(
         // 'https://overpass-api.de/api/interpreter', // ne marche pas
         // 'https://lz4.overpass-api.de/api/interpreter', // ne marche pas 
-        //  'https://overpass.kumi.systems/api/interpreter',//=> khedam mais ti7ma9
+        //  'https://overpass.kumi.systems/api/interpreter',//=> khedam 
           // 'https://overpass.openstreetmap.ru/api/interpreter',// ne marche pas 
-          'https://z.overpass-api.de/api/interpreter', // khedam mais ti7ma9 
+          'https://z.overpass-api.de/api/interpreter', // khedam 
         overpassQuery,
         {
           headers: { 'Content-Type': 'text/plain' },
@@ -180,7 +136,7 @@ export class CalmeCalculatorService {
       
       console.log('=>Résumé par type:');
       Object.entries(typeCounts).forEach(([type, count]) => {
-        console.log(`  • ${type}: ${count}`);
+        console.log(`  - ${type}: ${count}`);
       });
       console.log('');
 
@@ -353,6 +309,7 @@ out center;`;
   /**
    * Convertit des coordonnées WGS84 (SRID 4326) en UTM Zone 29N (SRID 32629)
    * Zone UTM 29N couvre le Maroc occidental (Casablanca)
+   * Principe Utilisé : Projection de Mercator Transverse
    */
   private wgs84ToUtm29N(lat: number, lon: number): { x: number; y: number } {
     const a = 6378137.0; // Rayon équatorial WGS84
@@ -502,6 +459,24 @@ out center;`;
       );
 
       console.log(`=>Distance calculée: ${distance.toFixed(1)}m`);
+     // ne PAS considérer l’élément bruyant si c’est le même lieu + respect strict du rayon
+      if (distance < 5 || distance > searchRadius) {
+
+        if (distance < 5) {
+          console.log("=> L'ELEMENT IDENTIQUE AU LIEU =>ON VA IGNORER l'IMPACT ");
+        }
+
+        if (distance > searchRadius) {
+          console.log(
+            `=> Distance ${distance.toFixed(1)}m > ${searchRadius}m — IGNORÉ`
+          );
+        }
+
+        continue; // On ignore cet élément
+      }
+
+
+
       // Calculer l'impact selon la formule: Impact = w × e^(-ln(2) × d/d_half)
       const exponent = -Math.LN2 * (distance / config.dHalf);//var just pour les consoles log , a supprimé
       const impact = this.calculateImpact(distance, config.poids, config.dHalf);
@@ -555,20 +530,5 @@ out center;`;
     };
   }
 
-  /**
-   * Scores de base selon les types de lieux
-   */
-  readonly SCORES_BASE: Record<number, number> = {
-    1: 90,  // BIBLIOTHEQUE
-    2: 70,  // CAFE
-    3: 80,  // COWORKING
-    4: 85,  // SALLE_ETUDE
-  };
 
-  /**
-   * Récupère le score de base depuis un id_type_lieu
-   */
-  getScoreBase(idTypeLieu: number): number {
-    return this.SCORES_BASE[idTypeLieu] || 70; // Valeur par défaut
-  }
 }

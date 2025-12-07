@@ -17,6 +17,8 @@ import { Avis } from './modules/avis/entities/avis.entity';
 import { Favoris } from './modules/favoris/entities/favoris.entity';
 import { AvisModule } from './modules/avis/avis.module';
 import { FavorisModule } from './modules/favoris/favoris.module';
+import { Feedback } from './modules/feedback/feedback.entity';
+import { FeedbackModule } from './modules/feedback/feedback.module';
 
 
 @Module({
@@ -44,6 +46,7 @@ import { FavorisModule } from './modules/favoris/favoris.module';
           Avis,     
           Favoris,  
           TypeElemBruit,
+          Feedback,
         ],
         synchronize: false, 
       }),
@@ -76,6 +79,7 @@ import { FavorisModule } from './modules/favoris/favoris.module';
     LieuxModule,
     AvisModule,
     FavorisModule,
+    FeedbackModule,
   ],
 })
 export class AppModule {}

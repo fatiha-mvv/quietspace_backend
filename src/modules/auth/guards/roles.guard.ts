@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Role } from '../../../common/enums/role.enum';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
+//Ce guard vérifie les rôles de l’utilisateur pour accéder à une route.
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}

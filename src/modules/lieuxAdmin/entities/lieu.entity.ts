@@ -43,13 +43,6 @@ export class LieuAdmin {
   })
   geom: string;
 
-
-  // @Column({
-  //   name: 'score_calme',
-  //   type: 'integer',
-  //   nullable: true
-  // })
-  // scoreCalme: number;
   @Column({ 
   name: 'score_calme', 
   type: 'decimal', 

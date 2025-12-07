@@ -27,7 +27,7 @@ export class Lieu {
     name: 'geom',
     type: 'geometry',
     spatialFeatureType: 'Point',
-    srid: 32629,
+    srid: 4326,
   })
   geom: Point;
 

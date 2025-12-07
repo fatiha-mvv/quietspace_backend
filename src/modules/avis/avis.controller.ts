@@ -7,10 +7,13 @@ import {
   Param,
   ParseIntPipe,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { AvisService } from './avis.service';
 import { CreateAvisDto } from './dto/create-avis.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
+@UseGuards(JwtAuthGuard) // Protect all routes with JWT
 @Controller('avis')
 export class AvisController {
   constructor(private readonly avisService: AvisService) {}
@@ -21,7 +24,7 @@ export class AvisController {
     @Body() createAvisDto: CreateAvisDto,
     @Request() req: any,
   ) {
-    const userId = req.user?.id || 1; // Mock pour tests
+   const userId = req.user.userId;
     return this.avisService.createOrUpdateAvis(userId, lieuId, createAvisDto);
   }
 
@@ -32,7 +35,7 @@ export class AvisController {
 
   @Get('user')
   async getAvisByUser(@Request() req: any) {
-    const userId = req.user?.id || 1;
+    const userId = req.user.userId;
     return this.avisService.getAvisByUser(userId);
   }
 
@@ -41,7 +44,7 @@ export class AvisController {
     @Param('lieuId', ParseIntPipe) lieuId: number,
     @Request() req: any,
   ) {
-    const userId = req.user?.id || 1;
+    const userId = req.user.userId;
     return this.avisService.deleteAvis(userId, lieuId);
   }
 }

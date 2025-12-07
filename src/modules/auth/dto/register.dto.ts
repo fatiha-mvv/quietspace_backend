@@ -1,10 +1,10 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength } from 'class-validator';
 
 export class RegisterDto {
-@IsNotEmpty({ message: 'Le nom est requis' })
+  @IsNotEmpty({ message: 'Le nom est requis' })
   @IsString()
   @MaxLength(30, { message: 'Le nom ne peut pas dépasser 30 caractères' })
-  username: string;  //  CHANGÉ de "name" à "username"
+  username: string;  
 
   @IsNotEmpty({ message: "L'email est requis" })
   @IsEmail({}, { message: 'Veuillez fournir un email valide' })
@@ -13,7 +13,7 @@ export class RegisterDto {
   
   @IsNotEmpty({ message: "La ville est requise" })
   @IsString({ message: 'La ville doit être une chaîne de caractères' })
-  ville: string;  // AJOUTÉ
+  ville: string;  
   
   @IsNotEmpty({ message: 'Le mot de passe est requis' })
   @IsString()

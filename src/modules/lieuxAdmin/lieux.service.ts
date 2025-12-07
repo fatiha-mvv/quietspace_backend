@@ -26,9 +26,6 @@ export class LieuxService {
 
  
 
-
-  
-
   async findAll(): Promise<LieuAdmin[]> {
     return await this.lieuRepository.find({
       relations: ['typeLieu'],
@@ -169,13 +166,11 @@ private extractCoordinates(geom: string) {
     if (!typeLieu) {
       throw new NotFoundException(`Type de lieu avec l'ID ${createLieuDto.idTypeLieu} non trouvé`);
     }
-    // DEBUG: Afficher le geom reçu
+    // Afficher le geom reçu
   console.log('Geom reçu:', createLieuDto.geom);
   console.log('Données complètes reçues:', createLieuDto);
 
-    // Calculer automatiquement le score de calme et le niveau
-    // const scoreCalme = this.calculerScoreCalme(createLieuDto.idTypeLieu);
-    // const niveauCalme = this.calculerNiveauCalme(scoreCalme);
+   
     //calcule de niveau de calme --DEBUT
     // extraire latitude et longitude depuis le geom
     if (!createLieuDto.geom) {
@@ -184,7 +179,8 @@ private extractCoordinates(geom: string) {
     const coords = this.extractCoordinates(createLieuDto.geom);
 
     // score de base selon type de lieu
-    const baseScore = this.calmeCalculator.getScoreBase(createLieuDto.idTypeLieu);
+    const baseScore = typeLieu.baseScore;
+
 
     // calcul via Overpass
     const calmeData = await this.calmeCalculator.calculateScoreCalme(
@@ -198,8 +194,8 @@ private extractCoordinates(geom: string) {
 
     //calcule de niveau de calme --FIN
 
-     // Utiliser Query Builder pour l'insertion spatiale
-  const result = await this.lieuRepository
+    // Utiliser Query Builder pour l'insertion spatiale
+    const result = await this.lieuRepository
     .createQueryBuilder()
     .insert()
     .into(LieuAdmin)
@@ -217,17 +213,7 @@ private extractCoordinates(geom: string) {
   
   // Recharger avec les relations
   return await this.findOne(savedLieu.id_lieu);
-    // const lieu = this.lieuRepository.create({
-    //   ...createLieuDto,
-    //   imageLieu: imagePath,
-    //   scoreCalme, // Toujours défini
-    //   niveauCalme // Toujours défini
-    // });
-
-    // const savedLieu = await this.lieuRepository.save(lieu);
     
-    // // Recharger avec les relations
-    // return await this.findOne(savedLieu.idLieu);
   }
 
   // Méthode pour mettre à jour un lieu avec upload d'image
@@ -255,15 +241,10 @@ private extractCoordinates(geom: string) {
       throw new NotFoundException(`Type de lieu avec l'ID ${updateLieuDto.idTypeLieu} non trouvé`);
     }
 
-    // Si le type de lieu change, recalculer le score et le niveau
-    // const nouveauScoreCalme = this.calculerScoreCalme(updateLieuDto.idTypeLieu);
-    // const nouveauNiveauCalme = this.calculerNiveauCalme(nouveauScoreCalme);
     //calculer score --DEBUT
-   const coords = this.extractCoordinates(updateLieuDto.geom ?? lieu.geom);
-
-    const baseScore = this.calmeCalculator.getScoreBase(
-      updateLieuDto.idTypeLieu ?? lieu.idTypeLieu
-    );
+    const coords = this.extractCoordinates(updateLieuDto.geom ?? lieu.geom);
+    const baseScore = typeLieu.baseScore;
+   
 
     const calmeData = await this.calmeCalculator.calculateScoreCalme(
       coords.latitude,
@@ -298,22 +279,6 @@ private extractCoordinates(geom: string) {
   }
 }
 
-  // Méthodes spécifiques pour les opérations spatiales
-  async findNearby(latitude: number, longitude: number, radius: number): Promise<LieuAdmin[]> {
-    return await this.lieuRepository
-      .createQueryBuilder('lieu')
-      .leftJoinAndSelect('lieu.typeLieu', 'typeLieu')
-      .where(
-        `ST_DWithin(
-          lieu.geom, 
-          ST_SetSRID(ST_MakePoint(:longitude, :latitude), 32629), 
-          :radius
-        )`,
-        { longitude, latitude, radius }
-      )
-      .orderBy('ST_Distance(lieu.geom, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 32629))')
-      .getMany();
-  }
 
   async findByType(idTypeLieu: number): Promise<LieuAdmin[]> {
     return await this.lieuRepository.find({

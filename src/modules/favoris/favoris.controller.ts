@@ -9,34 +9,39 @@ import {
   Request,
 } from '@nestjs/common';
 import { FavorisService } from './favoris.service';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
+@UseGuards(JwtAuthGuard) // Protect all routes with JWT
 @Controller('favoris')
-// @UseGuards(JwtAuthGuard) // Décommenter quand l'auth est en place
 export class FavorisController {
   constructor(private readonly favorisService: FavorisService) {}
 
-
+  // Get all favorites of the logged-in user
   @Get()
   async getFavoris(@Request() req: any) {
-    const userId = req.user?.id || 1; // Mock userId pour tests
+    const userId = req.user.userId; 
     return this.favorisService.getFavorisByUser(userId);
   }
 
+
+  // Add a favorite for the logged-in user
   @Post(':lieuId')
   async addFavoris(
     @Param('lieuId', ParseIntPipe) lieuId: number,
     @Request() req: any,
   ) {
-    const userId = req.user?.id || 1;
+    const userId = req.user.userId; 
     return this.favorisService.addFavoris(userId, lieuId);
   }
 
+  // Remove a favorite for the logged-in user
   @Delete(':lieuId')
   async removeFavoris(
     @Param('lieuId', ParseIntPipe) lieuId: number,
     @Request() req: any,
   ) {
-    const userId = req.user?.id || 1;
+    const userId = req.user.userId; 
     return this.favorisService.removeFavoris(userId, lieuId);
   }
 }
+

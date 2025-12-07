@@ -54,17 +54,8 @@ export class LieuxController {
     return await this.lieuxService.findOneType(id);
   }
 
-  // 3. ROUTE DE RECHERCHE PAR PROXIMITÉ (avant les routes :id)
-  @Get('recherche/proximite')
-  async findNearby(
-    @Query('lat', ParseFloatPipe) latitude: number,
-    @Query('lng', ParseFloatPipe) longitude: number,
-    @Query('radius', ParseFloatPipe) radius: number,
-  ): Promise<LieuAdmin[]> {
-    return await this.lieuxService.findNearby(latitude, longitude, radius);
-  }
 
-  // 4. ROUTE DE RECHERCHE PAR TYPE (avant les routes :id)
+  // 3. ROUTE DE RECHERCHE PAR TYPE (avant les routes :id)
   @Get('type/:idTypeLieu')
   async findByType(
     @Param('idTypeLieu', ParseIntPipe) idTypeLieu: number,

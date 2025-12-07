@@ -17,14 +17,15 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { username, email, password, ville } = registerDto;  // AJOUTÉ username et ville
+    const { username, email, password, ville } = registerDto;  
 
-    console.log('📥 Données reçues:', { username, email, ville, password: '***' });  //  LOG
+    console.log('Données reçues:', { username, email, ville, password: '***' });  
 
     // Vérifier si l'email existe déjà
     const existingUser = await this.usersRepository.findOne({ where: { email } });
     if (existingUser) {
       throw new ConflictException('Cet email est déjà utilisé');
+       console.log('Cet email est déjà utilisé');
     }
 
     // Hasher le mot de passe
@@ -32,18 +33,18 @@ export class AuthService {
 
     // Créer l'utilisateur avec le rôle "user" par défaut
     const user = this.usersRepository.create({
-      username,           //  AJOUTÉ
+      username,          
       email,
       password: hashedPassword,
-      ville,              //  AJOUTÉ
+      ville,              
       role: Role.USER,
     });
 
-    console.log('💾 Utilisateur avant save:', user);  //  LOG
+    console.log(' Utilisateur avant save:', user);  
 
     const savedUser = await this.usersRepository.save(user);
 
-    console.log(' Utilisateur sauvegardé:', savedUser);  //  LOG
+    console.log(' Utilisateur sauvegardé:', savedUser);  
 
     // Générer le token JWT
     const payload = { 

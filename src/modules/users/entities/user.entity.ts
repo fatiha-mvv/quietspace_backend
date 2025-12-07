@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeor
 import { Exclude } from 'class-transformer';
 import { Role } from '../../../common/enums/role.enum';
 
-@Entity('utilisateur')  // ← tout en minuscules
+@Entity('utilisateur')  
 export class User {
   @PrimaryGeneratedColumn({ name: 'id_utilisateur' })
   id: number;
@@ -29,7 +29,6 @@ export class User {
   @Column({ name: 'avatar', type: 'varchar', length: 256, nullable: true })
   avatar: string;
 
-  // Ajoute cette ligne :
   @Column({ name: 'ville', type: 'varchar', length: 100, nullable: true })
   ville: string;
 
